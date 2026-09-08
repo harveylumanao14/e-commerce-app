@@ -5,7 +5,7 @@ import { useState } from "react"
 const Product = ({ product, fetchCart }) => {
     const [quantity, setQuantity] = useState(1)
 
-    const onClickAdd = async (e, productId) => {
+    const addToCart = async (e, productId) => {
         e.preventDefault()
         const response = await axios.post('/api/cart-items', {
             productId: productId,
@@ -69,7 +69,7 @@ const Product = ({ product, fetchCart }) => {
             </div>
 
             <button className="add-to-cart-button button-primary"
-                onClick={(e) => onClickAdd(e, product.id)}>
+                onClick={(e) => addToCart(e, product.id)}>
                 Add to Cart
             </button>
         </div>
