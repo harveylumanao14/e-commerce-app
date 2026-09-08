@@ -27,7 +27,7 @@ const Checkout = ({ cart, getTotalCartItem, fetchCart }) => {
       }
     }
     fetchCheckout();
-  }, [])
+  }, [cart])
 
   return (
     <>
