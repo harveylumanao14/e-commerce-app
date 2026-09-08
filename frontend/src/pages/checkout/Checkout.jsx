@@ -7,26 +7,26 @@ import { useState, useEffect } from 'react'
 import OrderSummary from './OrderSummary'
 import PaymentSummary from './PaymentSummary'
 
-const Checkout = ({ cart, getTotalCartItem }) => {
+const Checkout = ({ cart, getTotalCartItem, fetchCart }) => {
   const countCartItem = getTotalCartItem()
   const [deliveryOptions, setDeliveryOptions] = useState([])
   const [paymentSummary, setPaymentSummary] = useState(null)
 
   useEffect(() => {
-    const fetchDeliveryOptions = async () => {
-      const response = await axios.get('/api/delivery-options?expand=estimatedDeliveryTime')
-      if (response.status === 200)
-        setDeliveryOptions(response.data)
-    }
+    const fetchCheckout = async () => {
+      try {
+        const [deliveryOptionResponse, PaymentSummaryResponse] = await Promise.all([
+          axios.get('/api/delivery-options?expand=estimatedDeliveryTime'),
+          axios.get('/api/payment-summary')
+        ])
 
-    const fetchPaymentSummary = async () => {
-      const response = await axios.get('/api/payment-summary')
-      if (response.status === 200)
-        setPaymentSummary(response.data)
+        setDeliveryOptions(deliveryOptionResponse.data)
+        setPaymentSummary(PaymentSummaryResponse.data)
+      } catch (error) {
+        console.error('Failed to load checkout data.', error)
+      }
     }
-
-    fetchDeliveryOptions()
-    fetchPaymentSummary()
+    fetchCheckout();
   }, [])
 
   return (
@@ -55,8 +55,8 @@ const Checkout = ({ cart, getTotalCartItem }) => {
         <div className="page-title">Review your order</div>
 
         <div className="checkout-grid">
-          <OrderSummary deliveryOptions={deliveryOptions} cart={cart} />
-          <PaymentSummary paymentSummary={paymentSummary}/>
+          <OrderSummary deliveryOptions={deliveryOptions} cart={cart} fetchCart={fetchCart} />
+          <PaymentSummary paymentSummary={paymentSummary} getTotalCartItem={getTotalCartItem} />
         </div>
       </div>
     </>
