@@ -1,6 +1,7 @@
 import { formatMoneyToCents } from '../../utils/format'
 
-const PaymentSummary = ({ paymentSummary }) => {
+const PaymentSummary = ({ paymentSummary, getTotalCartItem }) => {
+    const countCartItem = getTotalCartItem()
     return (
         <>
             {paymentSummary && (
@@ -11,7 +12,7 @@ const PaymentSummary = ({ paymentSummary }) => {
                         </div>
 
                         <div className="payment-summary-row">
-                            <div>Items ({paymentSummary.totalItems}):</div>
+                            <div>Items ({countCartItem}):</div>
                             <div className="payment-summary-money">{formatMoneyToCents(paymentSummary.productCostCents)}</div>
                         </div>
 
