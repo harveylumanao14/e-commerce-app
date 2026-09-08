@@ -1,32 +1,47 @@
 import dayjs from 'dayjs'
 import { formatMoneyToCents } from '../../utils/format'
+import axios from 'axios'
 
-const DeliveryOption = ({ deliveryOptions, cartItem }) => {
+const DeliveryOption = ({ deliveryOptions, cartItem, fetchCart }) => {
+
     return (
-        <>
-            {deliveryOptions.map((deliveryOption) => {
-                return (
-                    <div key={deliveryOption.id} className="delivery-options">
-                        <div className="delivery-options-title">
-                            Choose a delivery option:
-                        </div>
-                        <div className="delivery-option">
-                            <input type="radio" checked={cartItem.deliveryOptionId === deliveryOption.id}
+            <div className="delivery-options">
+                <div className="delivery-options-title">
+                    Choose a delivery option:
+                </div>
+                {deliveryOptions.map((deliveryOption) => {
+
+                    let priceString = 'FREE Shipping'
+
+                    if (deliveryOption.priceCents > 0) {
+                        priceString = `${formatMoneyToCents(deliveryOption.priceCents)} - Shipping`
+                    }
+
+                    const updateDeliveryOption = async () => {
+                        await axios.put(`api/cart-items/${cartItem.productId}`, {
+                            deliveryOptionId: deliveryOption.id
+                        })
+                        await fetchCart()
+                    }
+
+                    return (
+                        <div key={deliveryOption.id} className="delivery-option" onClick={updateDeliveryOption}>
+                            <input type="radio" checked={deliveryOption.id === cartItem.deliveryOptionId}
+                                onChange={() => { }}
                                 className="delivery-option-input"
-                                name={`delivery-option-${deliveryOption.id}`} />
+                                name={`delivery-option-${cartItem.productId}`} />
                             <div>
                                 <div className="delivery-option-date">
                                     {dayjs(deliveryOption.estimatedDeliveryTimeMs).format('dddd, MMMM D')}
                                 </div>
                                 <div className="delivery-option-price">
-                                    {deliveryOption.priceCents > 0 ? `${formatMoneyToCents(deliveryOption.priceCents)} - Shipping` : 'FREE Shipping'}
+                                    {priceString}
                                 </div>
                             </div>
                         </div>
-                    </div>
-                )
-            })}
-        </>
+                    )
+                })}
+            </div>
     )
 }
 
